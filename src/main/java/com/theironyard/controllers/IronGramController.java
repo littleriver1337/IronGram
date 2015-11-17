@@ -6,7 +6,6 @@ import com.theironyard.services.PhotoRepository;
 import com.theironyard.services.UserRepository;
 import com.theironyard.utils.PasswordHash;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,9 +15,10 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by MattBrown on 11/17/15.
@@ -101,6 +101,14 @@ public class IronGramController {
             throw new Exception ("Not logged in");
         }
         User user = users.findOneByUsername(username);
+        List<Photo> photoList = photos.findByReceiver(user);
+        for (Photo p : photoList) {
+            if (p.accessTime == null) {
+                p.accessTime = LocalDateTime.now();
+            } else if (p.accessTime.isBefore(LocalDateTime.now().minusSeconds(10))) {
+                photos.delete(p);
+            }
+        }
         return photos.findByReceiver(user);
     }
 }

@@ -1,5 +1,6 @@
 package com.theironyard.entities;
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * Created by MattBrown on 11/17/15.
@@ -11,6 +12,12 @@ public class Photo {
     @GeneratedValue
     @Column(nullable = false)
     public int id;
+
+    public long photoNumber;
+
+    public boolean isPrivate;
+
+    public LocalDateTime accessTime;
 
     @ManyToOne
     public User sender;
