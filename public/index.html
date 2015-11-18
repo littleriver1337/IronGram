@@ -18,12 +18,11 @@
 </form>
 <br>
 <form action = "/upload" method = "post" enctype = "multipart/form-data" id = "upload" hidden>
-    <input type = "text" placeholder = "Receiver name" name = "receiver"/>
-    <input type = "text" placeholder = "Seconds" name = "accessTime">
-    <input type = "file" name = "photo">
-        <input type="checkbox" name="vehicle" value="private">Private<br>
-        <input type="checkbox" name="vehicle" value="public">Public<br>
-        <input type="submit" value="Submit">
+    <input type = "text" placeholder = "Receiver" name = "receiver"/>
+    <input type="checkbox" name = "isPublic"/>Public
+    <input type = "file" name = "photo"/>
+    <input type = "number" placeholder = "Seconds" name = "deletePhoto"/>
+
     <button type = "submit">Upload</button>
 </form>
 

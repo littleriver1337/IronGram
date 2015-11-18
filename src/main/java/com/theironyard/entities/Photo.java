@@ -13,9 +13,9 @@ public class Photo {
     @Column(nullable = false)
     public int id;
 
-    public long photoNumber;
+    public long deletePhoto;
 
-    public boolean isPrivate;
+    public boolean isPublic;
 
     public LocalDateTime accessTime;
 

@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -70,7 +71,9 @@ public class IronGramController {
     public Photo upload(HttpSession session,
                         HttpServletResponse response,
                         String receiver,
-                        MultipartFile photo
+                        MultipartFile photo,
+                        long deletePhoto,
+                        boolean isPublic
     ) throws Exception {
         String username = (String) session.getAttribute("username");
         if(username == null){
@@ -78,6 +81,7 @@ public class IronGramController {
         }
         User senderUser = users.findOneByUsername(username);
         User receiverUser = users.findOneByUsername(receiver);
+
         if (receiverUser == null) {
             throw new Exception ("Receiver name doesn't exist!");
         }
@@ -89,6 +93,8 @@ public class IronGramController {
         p.sender = senderUser;
         p.receiver = receiverUser;
         p.fileName = photoFile.getName();
+        p.deletePhoto = deletePhoto;
+        p.isPublic = isPublic;
         photos.save(p);
         response.sendRedirect("/");
         return p;
@@ -105,10 +111,28 @@ public class IronGramController {
         for (Photo p : photoList) {
             if (p.accessTime == null) {
                 p.accessTime = LocalDateTime.now();
-            } else if (p.accessTime.isBefore(LocalDateTime.now().minusSeconds(10))) {
+                photos.save(p);
+            } else if (p.accessTime.isBefore(LocalDateTime.now().minusSeconds(p.deletePhoto))) {
                 photos.delete(p);
+                File file = new File("public", p.fileName);
+                file.delete();
             }
         }
         return photos.findByReceiver(user);
+    }
+
+    @RequestMapping("/public-photos")
+    public List<Photo> publicPhotos(HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        User user = users.findOneByUsername(username);
+        List<Photo> publicList = photos.findBySender(user);
+        ArrayList<Photo> photoList = new ArrayList<>();
+
+        for(Photo p : publicList){
+            if(p.isPublic){
+               photoList.add(p);
+            }
+        }
+        return photoList;
     }
 }
