@@ -117,6 +117,7 @@ public class IronGramController {
             if (p.accessTime == null) {
                 p.accessTime = LocalDateTime.now();
                 photos.save(p);
+                //waitToDelete(p, p.deleteSeconds);
             } else if (p.accessTime.isBefore(LocalDateTime.now().minusSeconds(p.deletePhoto))) {
                 photos.delete(p);
                 File file = new File("public", p.fileName);
@@ -125,10 +126,32 @@ public class IronGramController {
         }
         return photos.findByReceiver(user);
     }
+    /*public void waitToDelete(Photo photo, int seconds){
+        /*Thread thread = new Thread(()->{
+            try {
+                Thread.sleep(seconds * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            photos.delete(photo);
+            File file = new File("public", photo.fileName);
+            file.delete();
+        });
+        thread.start();
 
+        Timer t = new Timer();
+        t.schedule(new TimerTask(){
+            @Override
+            public void run(){
+                photos.delete(photo);
+                File file = new File ("public", photo.fileName);
+                file.delete();
+            }
+        }, seconds * 1000);
+    }
+*/
     @RequestMapping("/public-photos")
-    public List<Photo> publicPhotos(HttpSession session) {
-        String username = (String) session.getAttribute("username");
+    public List<Photo> publicPhotos(String username) {
         User user = users.findOneByUsername(username);
         List<Photo> publicList = photos.findBySender(user);
         ArrayList<Photo> photoList = new ArrayList<>();

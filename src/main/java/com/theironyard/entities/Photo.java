@@ -13,6 +13,7 @@ public class Photo {
     @Column(nullable = false)
     public int id;
 
+    @Column(nullable = false)
     public long deletePhoto;
 
     public boolean isPublic;
